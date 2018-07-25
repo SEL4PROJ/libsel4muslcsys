@@ -78,11 +78,11 @@ sys_mmap2(va_list ap)
     (void)fd;
     (void)offset;
     if (flags & MAP_ANONYMOUS) {
+      if (length > morecore_top - morecore_base) {
+        return -ENOMEM;
+      }
         /* Steal from the top */
         uintptr_t base = morecore_top - length;
-        if (base < morecore_base) {
-            return -ENOMEM;
-        }
         morecore_top = base;
         return base;
     }
